@@ -22,9 +22,11 @@ log_worker_status(client)
 
 n_samples = 50000000  # Increase the number of samples to create a larger workload
 n_features = 200
+n_workers = len(client.scheduler_info()['workers'])
+chunk_size = n_samples // n_workers
 
-# Create a large Dask array
-X = da.random.random((n_samples, n_features), chunks=(n_samples // len(client.scheduler_info()['workers']), n_features))
+# Create a large Dask array with smaller chunks
+X = da.random.random((n_samples, n_features), chunks=(chunk_size, n_features))
 X = X.persist()
 client.wait_for_workers(1)
 
