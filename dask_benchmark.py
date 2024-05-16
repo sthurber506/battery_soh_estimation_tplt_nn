@@ -12,7 +12,7 @@ if __name__ == "__main__":
     print("Connected to Dask cluster")
 
     # Increase task complexity
-    n_samples = 50_000_000  # Adjusted to fit in memory
+    n_samples = 10_000_000  # Further reduced to fit in memory
     n_features = 100
     n_clusters = 20
 
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     X = np.random.rand(n_samples, n_features).astype(np.float32)
 
     # Distribute data using Dask
-    dx = da.from_array(X, chunks=(n_samples // 100, n_features))
+    dx = da.from_array(X, chunks=(n_samples // 10, n_features))
 
     # K-means Clustering
     kmeans = KMeans(n_clusters=n_clusters, init="scalable-k-means++", random_state=0)
