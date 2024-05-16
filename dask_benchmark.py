@@ -19,10 +19,11 @@ client = Client(scheduler_address, timeout=60)
 # Log worker status
 log_worker_status(client)
 
-# Create a larger Dask array for testing
-n_samples = 10000000
+# Create a smaller Dask array with smaller chunks
+n_samples = 1000000  # Reduce the size to alleviate memory pressure
 n_features = 200
-X = da.random.random((n_samples, n_features), chunks=(n_samples // len(client.scheduler_info()['workers']), n_features))
+chunk_size = 1000  # Smaller chunk size
+X = da.random.random((n_samples, n_features), chunks=(chunk_size, n_features))
 X = X.persist()
 client.wait_for_workers(1)
 
