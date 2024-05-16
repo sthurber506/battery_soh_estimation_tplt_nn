@@ -13,7 +13,7 @@ def log_worker_status(client):
         logger.info(f"Worker {worker} has {info['nthreads']} threads and {info['memory_limit'] / 1e9:.2f} GB memory")
 
 # Connect to the cluster
-scheduler_address = "tcp://<scheduler-ip>:8786"
+scheduler_address = "tcp://100.82.76.42:8786"
 client = Client(scheduler_address, timeout=60)
 
 # Log worker status
