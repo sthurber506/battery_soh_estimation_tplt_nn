@@ -17,9 +17,12 @@ def log_worker_status(client):
 def log_memory_usage(client):
     workers = client.scheduler_info()['workers']
     for worker, info in workers.items():
-        managed_memory = info['memory']['managed_in_memory'] / 1e9
-        unmanaged_memory = info['memory']['unmanaged'] / 1e9
-        logger.info(f"Worker {worker} managed memory: {managed_memory:.2f} GB, unmanaged memory: {unmanaged_memory:.2f} GB")
+        if 'memory' in info:
+            managed_memory = info['memory']['managed_in_memory'] / 1e9
+            unmanaged_memory = info['memory']['unmanaged'] / 1e9
+            logger.info(f"Worker {worker} managed memory: {managed_memory:.2f} GB, unmanaged memory: {unmanaged_memory:.2f} GB")
+        else:
+            logger.warning(f"Worker {worker} does not have memory information available.")
 
 # Connect to the cluster
 client = Client("tcp://localhost:8786")
