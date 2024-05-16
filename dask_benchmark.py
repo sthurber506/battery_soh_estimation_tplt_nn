@@ -25,14 +25,14 @@ def log_memory_usage(client):
             logger.warning(f"Worker {worker} does not have memory information available.")
 
 # Connect to the cluster
-client = Client("tcp://localhost:8786")
+client = Client("tcp://172.29.184.162:8786")  # Replace with your scheduler IP
 
 # Log worker status
 log_worker_status(client)
 
 n_samples = 50000000  # Total number of samples
 n_features = 200
-chunk_size = 250000  # Smaller chunk size to fit within worker memory limits
+chunk_size = 50000  # Further reducing chunk size to fit within worker memory limits
 
 # Create a large Dask array with smaller chunks
 X = da.random.random((n_samples, n_features), chunks=(chunk_size, n_features))
