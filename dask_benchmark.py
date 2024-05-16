@@ -1,6 +1,6 @@
 import dask.array as da
 from dask_cuda import LocalCUDACluster
-from dask.distributed import Client, performance_report, get_task_stream
+from dask.distributed import Client, performance_report, get_task_stream, wait
 from cuml.cluster import KMeans
 import time
 import logging
@@ -30,6 +30,11 @@ if __name__ == "__main__":
 
     # Create and distribute data using Dask
     dx = da.random.random((n_samples, n_features), chunks=(n_samples // 100, n_features))
+    dx = dx.persist()  # Persist the data in the cluster memory
+    wait(dx)  # Ensure all data is distributed and ready
+
+    # Log the status of the distributed array
+    logging.info(f"Distributed array with shape {dx.shape} and chunks {dx.chunks}")
 
     # K-means Clustering
     kmeans = KMeans(n_clusters=n_clusters, init="scalable-k-means++", random_state=0)
