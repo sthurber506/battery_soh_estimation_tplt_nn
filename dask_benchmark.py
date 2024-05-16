@@ -22,7 +22,7 @@ log_worker_status(client)
 # Create a smaller Dask array with smaller chunks
 n_samples = 1000000  # Reduce the size to alleviate memory pressure
 n_features = 200
-chunk_size = 1000  # Smaller chunk size
+chunk_size = 500  # Even smaller chunk size
 X = da.random.random((n_samples, n_features), chunks=(chunk_size, n_features))
 X = X.persist()
 client.wait_for_workers(1)
