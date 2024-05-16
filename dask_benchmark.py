@@ -15,19 +15,20 @@ if __name__ == "__main__":
     n_features = 200
     n_clusters = 10
 
-    # Create a Dask array directly
-    dx = da.random.random((n_samples, n_features), chunks=(n_samples // 10, n_features)).astype('float32')
+    # Create a Dask array directly with smaller chunks
+    dx = da.random.random((n_samples, n_features), chunks=(n_samples // 100, n_features)).astype('float32')
+
+    # Persist the Dask array to ensure intermediate results are stored
+    dx = dx.persist()
 
     # K-means Clustering
     kmeans = KMeans(n_clusters=n_clusters, init="scalable-k-means++", random_state=0)
 
     # Measure execution time
     start_time = time.time()
-    kmeans.fit(dx)
+    with performance_report(filename="dask_benchmark_report.html"):
+        kmeans.fit(dx)
     end_time = time.time()
 
     print(f"K-means clustering completed in {end_time - start_time:.2f} seconds")
     print(f"Cluster centers: {kmeans.cluster_centers_}")
-
-    with performance_report(filename="dask_benchmark_report.html"):
-        kmeans.fit(dx)
