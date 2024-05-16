@@ -11,27 +11,25 @@ if __name__ == "__main__":
     client = Client(cluster)
     print("Connected to Dask cluster")
 
-    # Adjust task complexity to exceed single machine memory but fit within cluster memory
-    n_samples = 50_000_000  # Number of samples that require more than 32 GB of memory
+    # Increase task complexity to require more resources
+    n_samples = 30_000_000  # Adjusted to ensure the task requires multiple machines
     n_features = 200
-    n_clusters = 10
+    n_clusters = 50
 
     # Generate random data
     X = np.random.rand(n_samples, n_features).astype(np.float32)
 
     # Distribute data using Dask
-    dx = da.from_array(X, chunks=(n_samples // 10, n_features))
+    dx = da.from_array(X, chunks=(n_samples // 30, n_features))
 
     # K-means Clustering
     kmeans = KMeans(n_clusters=n_clusters, init="scalable-k-means++", random_state=0)
 
     # Measure execution time
-    start_time = time.time()
-    kmeans.fit(dx)
-    end_time = time.time()
+    with performance_report(filename="dask_benchmark_report.html"):
+        start_time = time.time()
+        kmeans.fit(dx)
+        end_time = time.time()
 
     print(f"K-means clustering completed in {end_time - start_time:.2f} seconds")
     print(f"Cluster centers: {kmeans.cluster_centers_}")
-
-    with performance_report(filename="dask_benchmark_report.html"):
-        kmeans.fit(dx)
