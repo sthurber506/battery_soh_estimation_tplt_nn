@@ -20,7 +20,7 @@ client = Client("tcp://localhost:8786")
 # Log worker status
 log_worker_status(client)
 
-n_samples = 1000000
+n_samples = 50000000
 n_features = 200
 
 # Create a large Dask array
