@@ -15,10 +15,6 @@ def log_worker_status(client):
     for worker, info in workers.items():
         logging.info(f"Worker {worker} has {info['nthreads']} threads and {info['memory_limit'] / 1e9:.2f} GB memory")
 
-    # Print the task statuses
-    status = client.scheduler_info()["status"]
-    logging.info(f"Cluster status: {status}")
-
 if __name__ == "__main__":
     # Initialize Dask cluster with LocalCUDACluster
     cluster = LocalCUDACluster()
