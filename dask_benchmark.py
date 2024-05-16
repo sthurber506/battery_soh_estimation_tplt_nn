@@ -1,5 +1,4 @@
 import dask.array as da
-import numpy as np
 from dask_cuda import LocalCUDACluster
 from dask.distributed import Client, performance_report, get_task_stream
 from cuml.cluster import KMeans
@@ -29,11 +28,8 @@ if __name__ == "__main__":
     n_features = 200
     n_clusters = 100
 
-    # Generate random data
-    X = np.random.rand(n_samples, n_features).astype(np.float32)
-
-    # Distribute data using Dask
-    dx = da.from_array(X, chunks=(n_samples // 100, n_features))
+    # Create and distribute data using Dask
+    dx = da.random.random((n_samples, n_features), chunks=(n_samples // 100, n_features))
 
     # K-means Clustering
     kmeans = KMeans(n_clusters=n_clusters, init="scalable-k-means++", random_state=0)
