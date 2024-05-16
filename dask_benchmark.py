@@ -13,7 +13,6 @@ def log_worker_status(client):
     workers = client.scheduler_info()['workers']
     for worker, info in workers.items():
         logger.info(f"Worker {worker} has {info['nthreads']} threads and {info['memory_limit'] / 1e9:.2f} GB memory")
-        logger.info(f"Worker {worker} is processing {len(info['processing'])} tasks")
 
 # Connect to the cluster
 client = Client("tcp://localhost:8786")
