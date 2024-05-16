@@ -16,7 +16,7 @@ if __name__ == "__main__":
     n_clusters = 10
 
     # Create a Dask array directly with smaller chunks
-    dx = da.random.random((n_samples, n_features), chunks=(n_samples // 300, n_features)).astype('float32')
+    dx = da.random.random((n_samples, n_features), chunks=(n_samples // 3000, n_features)).astype('float32')
 
     # Persist the Dask array to ensure intermediate results are stored
     dx = dx.persist()
