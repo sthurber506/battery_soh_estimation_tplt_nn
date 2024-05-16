@@ -11,12 +11,12 @@ if __name__ == "__main__":
     print("Connected to Dask cluster")
 
     # Increase task complexity
-    n_samples = 50_000_000  # Number of samples
+    n_samples = 30_000_000  # Number of samples
     n_features = 200
     n_clusters = 10
 
     # Create a Dask array directly with smaller chunks
-    dx = da.random.random((n_samples, n_features), chunks=(n_samples // 100, n_features)).astype('float32')
+    dx = da.random.random((n_samples, n_features), chunks=(n_samples // 300, n_features)).astype('float32')
 
     # Persist the Dask array to ensure intermediate results are stored
     dx = dx.persist()
