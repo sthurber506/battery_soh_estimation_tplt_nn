@@ -1,35 +1,33 @@
-import dask
-from dask.distributed import Client, wait
+import time
 from dask_cuda import LocalCUDACluster
+from dask.distributed import Client, performance_report
 import dask_cudf
 import cuml
-from cuml.cluster import KMeans
-import numpy as np
-import cupy as cp
-import cudf
 
-def create_data(n_samples=1000000, n_features=50):
-    # Generate random data on the GPU
-    data = cp.random.random((n_samples, n_features))
-    return dask_cudf.from_cudf(cudf.DataFrame(data), npartitions=10)
+# Start measuring time
+start_time = time.time()
 
-def main():
-    # Connect to the Dask cluster
-    client = Client("tcp://172.29.184.162:8786")  # Scheduler IP address
+# Connect to the Dask cluster
+cluster = LocalCUDACluster()
+client = Client(cluster)
+print("Connected to Dask cluster")
 
-    print("Connected to Dask cluster")
-    
-    # Create random dataset
-    data = create_data()
+# Generate some synthetic data
+n_samples = 1_000_000
+n_features = 50
+X, _ = cuml.datasets.make_blobs(n_samples=n_samples, n_features=n_features, centers=8, cluster_std=0.1, random_state=0)
+df = dask_cudf.from_cudf(X, npartitions=8)
 
-    # Perform k-means clustering
-    kmeans = KMeans(n_clusters=10, init="k-means||", max_iter=300)
-    
-    # Compute and measure time
-    result = kmeans.fit(data)
-    
+# Generate a performance report
+with performance_report(filename="dask_report.html"):
+    # Perform K-means clustering
+    kmeans = cuml.dask.cluster.KMeans(n_clusters=8)
+    kmeans.fit(df)
     print("K-means clustering completed")
-    print("Cluster centers:", result.cluster_centers_)
+    print("Cluster centers:", kmeans.cluster_centers_)
 
-if __name__ == "__main__":
-    main()
+# End measuring time
+end_time = time.time()
+
+# Print the total execution time
+print(f"Total execution time: {end_time - start_time} seconds")
