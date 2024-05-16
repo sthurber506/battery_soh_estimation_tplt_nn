@@ -1,33 +1,32 @@
+import dask
 import time
+import numpy as np
 from dask_cuda import LocalCUDACluster
-from dask.distributed import Client, performance_report
-import dask_cudf
-import cuml
+from dask.distributed import Client
+from dask.distributed import performance_report
+from cuml.cluster import KMeans
 
-# Start measuring time
-start_time = time.time()
+if __name__ == "__main__":
+    # Initialize Dask cluster with LocalCUDACluster
+    cluster = LocalCUDACluster()
+    client = Client(cluster)
+    print("Connected to Dask cluster")
 
-# Connect to the Dask cluster
-cluster = LocalCUDACluster()
-client = Client(cluster)
-print("Connected to Dask cluster")
+    # Generate random data
+    n_samples = 1_000_000
+    n_features = 100
+    X = np.random.rand(n_samples, n_features).astype(np.float32)
+    
+    # Distribute data using Dask
+    dX = dask.array.from_array(X, chunks=(n_samples // 10, n_features))
+    
+    # K-means clustering
+    n_clusters = 10
+    kmeans = KMeans(n_clusters=n_clusters, init="scalable-k-means++", random_state=0)
 
-# Generate some synthetic data
-n_samples = 1_000_000
-n_features = 50
-X, _ = cuml.datasets.make_blobs(n_samples=n_samples, n_features=n_features, centers=8, cluster_std=0.1, random_state=0)
-df = dask_cudf.from_cudf(X, npartitions=8)
-
-# Generate a performance report
-with performance_report(filename="dask_report.html"):
-    # Perform K-means clustering
-    kmeans = cuml.dask.cluster.KMeans(n_clusters=8)
-    kmeans.fit(df)
-    print("K-means clustering completed")
-    print("Cluster centers:", kmeans.cluster_centers_)
-
-# End measuring time
-end_time = time.time()
-
-# Print the total execution time
-print(f"Total execution time: {end_time - start_time} seconds")
+    with performance_report(filename="dask_benchmark_report.html"):
+        start_time = time.time()
+        kmeans.fit(dX)
+        end_time = time.time()
+        print(f"K-means clustering completed in {end_time - start_time:.2f} seconds")
+        print(f"Cluster centers: {kmeans.cluster_centers_}")
