@@ -12,8 +12,8 @@ if __name__ == "__main__":
     print("Connected to Dask cluster")
 
     # Increase task complexity
-    n_samples = 100_000_000  # More samples
-    n_features = 200
+    n_samples = 50_000_000  # Adjusted to fit in memory
+    n_features = 100
     n_clusters = 20
 
     # Generate random data
