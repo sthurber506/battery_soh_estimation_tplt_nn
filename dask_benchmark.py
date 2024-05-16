@@ -13,6 +13,7 @@ def log_worker_status(client):
     workers = client.scheduler_info()['workers']
     for worker, info in workers.items():
         logger.info(f"Worker {worker} has {info['nthreads']} threads and {info['memory_limit'] / 1e9:.2f} GB memory")
+        logger.info(f"Worker {worker} is processing {len(info['processing'])} tasks")
 
 # Connect to the cluster
 client = Client("tcp://localhost:8786")
@@ -20,7 +21,7 @@ client = Client("tcp://localhost:8786")
 # Log worker status
 log_worker_status(client)
 
-n_samples = 1000000
+n_samples = 50000000  # Increase the number of samples to create a larger workload
 n_features = 200
 
 # Create a large Dask array
@@ -37,3 +38,6 @@ end_time = time.time()
 
 logger.info(f"Mean: {X_mean}")
 logger.info(f"Computation took {end_time - start_time:.2f} seconds")
+
+# Log worker status after computation
+log_worker_status(client)
