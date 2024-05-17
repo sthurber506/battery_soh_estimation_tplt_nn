@@ -14,7 +14,7 @@ def log_worker_status(client):
 
 # Connect to the cluster
 scheduler_address = "tcp://100.82.76.42:8786"
-client = Client(scheduler_address, timeout=60)
+client = Client(scheduler_address, timeout=120)
 
 # Log worker status
 log_worker_status(client)
