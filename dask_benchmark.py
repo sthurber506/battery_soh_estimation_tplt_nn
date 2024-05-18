@@ -20,8 +20,11 @@ client = Client("tcp://localhost:8786")
 # Log worker status
 log_worker_status(client)
 
-n_samples = 1000000
-n_features = 200
+# n_samples = 1000000
+# n_features = 200
+n_samples = 10000000  # Increase the number of samples
+n_features = 2000     # Increase the number of features
+
 
 # Create a large Dask array
 X = da.random.random((n_samples, n_features), chunks=(n_samples // len(client.scheduler_info()['workers']), n_features))
