@@ -6,7 +6,7 @@ import dask.array as da
 import time
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def log_worker_status(client):
@@ -22,7 +22,6 @@ log_worker_status(client)
 
 n_samples = 1000000
 n_features = 200
-
 
 # Create a large Dask array
 X = da.random.random((n_samples, n_features), chunks=(n_samples // len(client.scheduler_info()['workers']), n_features))
