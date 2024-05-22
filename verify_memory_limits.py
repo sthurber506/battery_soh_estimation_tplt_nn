@@ -1,8 +1,8 @@
 from dask.distributed import Client
 
 def check_memory():
-    client = Client('tcp://100.82.76.42:8786')  # Update with your scheduler address if different
-    print("Scheduler Address: tcp://100.82.76.42:8786")
+    client = Client('tcp://localhost:8786')  # Update with your scheduler address if different
+    print("Scheduler Address: tcp://localhost:8786")
 
     # Get the worker information from the scheduler
     info = client.scheduler_info()
