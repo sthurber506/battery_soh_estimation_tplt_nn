@@ -28,11 +28,9 @@ chunks = (n_samples // (len(client.scheduler_info()['workers']) * 4), n_features
 X = da.random.random((n_samples, n_features), chunks=chunks)
 Y = da.random.random((n_features, n_samples), chunks=chunks)
 
-X = X.persist()
-Y = Y.persist()
-client.wait_for_workers(1)
-
-logger.info("Created Dask arrays")
+# Scatter data to workers
+X = client.scatter(X, broadcast=True)
+Y = client.scatter(Y, broadcast=True)
 
 # Perform a computation
 start_time = time.time()
