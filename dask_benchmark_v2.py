@@ -1,5 +1,5 @@
 from dask_cuda import LocalCUDACluster
-from dask.distributed import Client
+from dask.distributed import Client, wait
 import logging
 import numpy as np
 import dask.array as da
@@ -22,24 +22,23 @@ log_worker_status(client)
 
 n_samples = 1000000
 n_features = 200
+chunk_size = n_samples // (len(client.scheduler_info()['workers']) * 2)
 
-# Create large Dask arrays with smaller chunks
-chunks = (n_samples // (len(client.scheduler_info()['workers']) * 4), n_features)
-X = da.random.random((n_samples, n_features), chunks=chunks)
-Y = da.random.random((n_features, n_samples), chunks=chunks)
+# Create a large Dask array with optimized chunk size
+X = da.random.random((n_samples, n_features), chunks=(chunk_size, n_features))
+X = X.persist()
+wait(X)
 
-# Scatter data to workers
-X = client.scatter(X, broadcast=True)
-Y = client.scatter(Y, broadcast=True)
+logger.info("Created Dask array")
+
+# Scatter the data to all workers
+futures = client.scatter(X, broadcast=True)
+wait(futures)
 
 # Perform a computation
 start_time = time.time()
 X_mean = X.mean().compute()
-X_sum = X.sum(axis=0).compute()
-X_dot_Y = da.dot(X, Y).compute()
 end_time = time.time()
 
 logger.info(f"Mean: {X_mean}")
-logger.info(f"Sum: {X_sum}")
-logger.info(f"Dot product shape: {X_dot_Y.shape}")
 logger.info(f"Computation took {end_time - start_time:.2f} seconds")
