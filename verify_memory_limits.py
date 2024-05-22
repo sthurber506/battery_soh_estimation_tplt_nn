@@ -1,4 +1,4 @@
-from dask.distributed import Client
+from dask.distributed import Client, get_worker
 
 def get_memory_info():
     worker = get_worker()
