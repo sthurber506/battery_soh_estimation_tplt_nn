@@ -1,18 +1,12 @@
-from dask_cuda import LocalCUDACluster
-from dask.distributed import Client, get_worker, get_client
+from dask.distributed import Client
 
 def get_memory_info():
     worker = get_worker()
     return worker.nthreads, worker.memory_limit
 
-def run_on_workers():
-    client = get_client()
-    return client.run(get_memory_info)
-
 def check_memory():
-    cluster = LocalCUDACluster()
-    client = Client(cluster)
-    result = client.run(run_on_workers)
+    client = Client('tcp://localhost:8786')  # Update with your scheduler address if different
+    result = client.run(get_memory_info)
     print(result)
 
 if __name__ == '__main__':
