@@ -9,8 +9,8 @@ def get_memory_info():
         return "No worker found"
 
 def check_memory():
-    client = Client('tcp://localhost:8786')  # Update with your scheduler address if different
-    print("Scheduler Address: tcp://localhost:8786")
+    client = Client('tcp://100.82.76.42:8786')  # Update with your scheduler address if different
+    print("Scheduler Address: tcp://100.82.76.42:8786")
 
     # Run the `get_memory_info` function on all workers
     result = client.run(get_memory_info)
