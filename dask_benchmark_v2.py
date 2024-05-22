@@ -1,5 +1,5 @@
 from dask_cuda import LocalCUDACluster
-from dask.distributed import Client, wait
+from dask.distributed import Client
 import logging
 import numpy as np
 import dask.array as da
@@ -20,20 +20,15 @@ client = Client("tcp://localhost:8786")
 # Log worker status
 log_worker_status(client)
 
-n_samples = 1000000
+n_samples = 10000000
 n_features = 200
-chunk_size = n_samples // (len(client.scheduler_info()['workers']) * 2)
 
-# Create a large Dask array with optimized chunk size
-X = da.random.random((n_samples, n_features), chunks=(chunk_size, n_features))
+# Create a large Dask array
+X = da.random.random((n_samples, n_features), chunks=(n_samples // len(client.scheduler_info()['workers']), n_features))
 X = X.persist()
-wait(X)
+client.wait_for_workers(1)
 
 logger.info("Created Dask array")
-
-# Scatter the data to all workers
-futures = client.scatter(X, broadcast=True)
-wait(futures)
 
 # Perform a computation
 start_time = time.time()
@@ -42,3 +37,6 @@ end_time = time.time()
 
 logger.info(f"Mean: {X_mean}")
 logger.info(f"Computation took {end_time - start_time:.2f} seconds")
+
+# Log final worker status
+log_worker_status(client)
