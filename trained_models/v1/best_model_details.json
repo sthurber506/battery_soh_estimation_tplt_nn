@@ -1,0 +1,62 @@
+{
+    "input_columns": [
+        "Time",
+        "Voltage",
+        "Current",
+        "SOC",
+        "Capacity_initialized",
+        "C_rate_initialized",
+        "OCV",
+        "tplt_V_max",
+        "tplt_delta_V_2",
+        "C_rate_based_on_AHC_initialized"
+    ],
+    "architecture": {
+        "input_dim": 10,
+        "hidden_dims": [
+            274,
+            517,
+            273,
+            515,
+            515
+        ]
+    },
+    "performance": {
+        "test_loss": 0.0,
+        "test_accuracy": 1.0,
+        "combined_metric_loss": 0.0,
+        "combined_metric_accuracy": 1.0
+    },
+    "config": {
+        "absolute_dim_range_max": 1024,
+        "absolute_dim_range_min": 4,
+        "activation_function": "gelu",
+        "apply_penalty": false,
+        "batch_size": 5,
+        "dropout": 0.3063746372010995,
+        "epochs": 10000,
+        "hidden_dim_initial_range_max": 512,
+        "hidden_dim_initial_range_min": 8,
+        "hidden_dim_random_scale_factor_range_max": 2,
+        "hidden_dim_random_scale_factor_range_min": 1.01,
+        "hidden_dim_scale_factor_fixed": true,
+        "hidden_dim_strategy": "expand",
+        "hidden_layers_max": 7,
+        "hidden_layers_min": 2,
+        "learning_rate": 0.09655076819912645,
+        "momentum": 0.23683346921698387,
+        "nesterov": true,
+        "normalization_method": "std",
+        "optimizer": "nadam",
+        "output_activation_function": "none",
+        "penalty_factor_max": 100,
+        "penalty_factor_min": 1,
+        "randomize_hidden_dim_strategy": true,
+        "actual_hidden_layers": 5,
+        "loss_function": "huber",
+        "huber_delta": 0.5926462206407184
+    },
+    "apply_penalty": false,
+    "penalty_factor": 0.0,
+    "normalization_method": "std"
+}

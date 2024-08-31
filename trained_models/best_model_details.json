@@ -1,0 +1,31 @@
+{
+    "input_columns": [
+        "Time",
+        "Voltage",
+        "Current",
+        "SOC",
+        "Capacity_initialized",
+        "C_rate_initialized",
+        "OCV",
+        "tplt_V_max",
+        "tplt_delta_V_2",
+        "C_rate_based_on_AHC_initialized"
+    ],
+    "architecture": {
+        "input_dim": 10,
+        "hidden_dims": [
+            155,
+            155,
+            147,
+            139,
+            146,
+            153
+        ]
+    },
+    "performance": {
+        "test_loss": 0.01549438200891018,
+        "test_accuracy": 0.8755235684600888,
+        "combined_metric_loss": 0.01596254079292218,
+        "combined_metric_accuracy": 0.8736950555715651
+    }
+}
