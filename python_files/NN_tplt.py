@@ -194,7 +194,7 @@ class BatteryDataset(Dataset):
 
     def load_tensors_in_chunks(self):
         print("Loading tensor files in chunks to avoid memory issues...")
-        chunk_size = 2  # Adjust this value based on system memory capacity
+        chunk_size = 2  # Adjust this value based on your system's memory capacity
         for i in range(0, len(self.tensor_files), chunk_size):
             self.load_chunk(i, i + chunk_size)
 
@@ -270,7 +270,7 @@ class BatteryDataset(Dataset):
     def process_individual_files(self, parquet_dir):
         print("Loading data from individual parquet files in batches...")
         parquet_files = [os.path.join(parquet_dir, f) for f in os.listdir(parquet_dir) if f.endswith('.parquet')]
-        batch_size = 11  # Process 11 files at a time to avoid memory issues
+        batch_size = 11  # Process 11 files at a time, you can adjust this as needed
         for start_idx in range(0, len(parquet_files), batch_size):
             batch_files = parquet_files[start_idx:start_idx + batch_size]
             output_file = os.path.join(parquet_dir, f"combined_{start_idx//batch_size}.parquet")
@@ -358,13 +358,13 @@ class BatteryDataset(Dataset):
         if len(self.targets.shape) == 1:
             self.targets = self.targets.unsqueeze(1)  # Add a dimension to make it (N, 1)
 
-        # Set max_dataset_idx after loading all simulated data
+        # **FIX:** Set max_dataset_idx after loading all simulated data
         self.max_dataset_idx = self.dataset_idx.max().item() + 1  # Save max_dataset_idx as a class attribute
 
         print("All tensors have been loaded, processed, and concatenated on the CPU.")
 
         # Load and process real data (ensure this is done after max_dataset_idx is set)
-        real_data_tensor_file = 'real_data_tensor.pt'  
+        real_data_tensor_file = 'real_data_tensor.pt'  # Modify with the correct file path
         print(f"Loading real data tensor from {real_data_tensor_file}")
 
         # Load the real data tensor and unpack it
@@ -678,7 +678,7 @@ num_workers = get_num_workers()
 
 
 
-# Function to create dataloaders with normalization and reversal, using batch_size to control the number of dataset_idx groups per batch
+# Updated function to create dataloaders with normalization and reversal, using batch_size to control the number of dataset_idx groups per batch
 def create_normalized_dataloaders(normalization_method, batch_size, local_dataset):
     # Get unique dataset_idx groups
     all_unique_dataset_idxs = torch.unique(local_dataset.dataset_idx).numpy()
@@ -711,6 +711,8 @@ def create_normalized_dataloaders(normalization_method, batch_size, local_datase
     val_dataset = Subset(local_dataset, torch.where(val_mask)[0])
     test_dataset = Subset(local_dataset, torch.where(test_mask)[0])
 
+    train_scaler = None  # Initialize train_scaler to None
+
     # Normalize the training set and fit the scaler
     if normalization_method != 'none':
         apply_normalization(train_dataset, normalization_method)  # Fit scaler on the training dataset
@@ -734,6 +736,7 @@ def create_normalized_dataloaders(normalization_method, batch_size, local_datase
                             persistent_workers=True, collate_fn=custom_collate_fn)
 
     return train_loader, val_loader, test_loader, train_scaler
+
 
 
 
@@ -998,7 +1001,7 @@ def create_model(input_dim, config):
         "squ": ShiftedQuadraticUnit(),
         "dsu": DecayingSineUnit(),
         "ncu": NonMonotonicCubicUnit(),
-        "sigmoid": nn.Sigmoid(),  
+        "sigmoid": nn.Sigmoid(),  # Added sigmoid activation function
     }
 
     activation_function = activation_functions[config.activation_function]
@@ -1133,13 +1136,13 @@ def generate_hidden_dims(config):
 
 
 # Early stopping parameters based on accuracy or loss
-early_stop_acc_threshold = 0.99  # Accuracy threshold
+early_stop_acc_threshold = 0.99  # Set your desired accuracy threshold
 early_stop_loss_threshold = 1 - early_stop_acc_threshold  # Equivalent loss threshold based on accuracy
 early_stop_patience = 50  # Number of epochs to wait before stopping when the criteria are met
 
 
 
-# Training loop with early stopping based on accuracy or loss
+# Modified training loop with early stopping based on accuracy or loss
 def train_model(train_loader, val_loader, test_loader, penalty_factor, apply_penalty):
     model.train()
     running_loss = 0.0
